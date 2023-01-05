@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const User = require('../models/User');
 
 exports.createUser = async (req, res) => {
@@ -8,6 +9,39 @@ exports.createUser = async (req, res) => {
             user
         });
     } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            error
+        })
+    } 
+}
+
+exports.loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        let user = await User.findOne({ email: email});
+        let same = await bcrypt.compare(password, user.password)
+        if(same){
+            res.status(200).send('You are logged in'); 
+        } else{ 
+            res.send('Geçersiz');
+        }
+    } 
+/*  try {
+        const { email, password } = req.body;
+        await User.findOne({ email }, (err, user) => {
+                if (user) {
+                    bcrypt.compare(password, user.password, (err, same) => {
+                        if (same) {
+                            // USER SESSION
+                            res.status(200).send('YOU ARE LOGGED IN');
+                        }
+                    });
+                }
+        }); 
+    }*/
+    catch (error) {
         res.status(400).json({
             status: 'fail',
             error
