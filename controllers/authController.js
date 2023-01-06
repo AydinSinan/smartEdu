@@ -1,3 +1,4 @@
+const session = require("express-session")
 const bcrypt = require("bcrypt");
 const User = require('../models/User');
 
@@ -23,8 +24,11 @@ exports.loginUser = async (req, res) => {
         let user = await User.findOne({ email: email});
         let same = await bcrypt.compare(password, user.password)
         if(same){
-            res.status(200).send('You are logged in'); 
+            // User SESSION
+            req.session.userID = user._id
+            res.status(200).redirect("/"); 
         } else{ 
+            
             res.send('Geçersiz');
         }
     } 
